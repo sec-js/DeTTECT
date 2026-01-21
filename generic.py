@@ -54,14 +54,32 @@ def _convert_stix_techniques_to_dict(mitre, stix_attack_data):
     # Get all data component objects
     data_components = mitre.get_data_components()
     dc_lookup = {dc['id']:dc for dc in data_components}
+
+    detection_strategies_stix = mitre.get_detection_strategies(False)
+    detection_strategies_ids = {}
+    for ds_item in detection_strategies_stix:
+        detection_strategies_ids[ds_item["id"]] = ds_item
+
+    analytics_stix = mitre.get_analytics(False)
+    analytics_ids = {}
+    for a_item in analytics_stix:
+        analytics_ids[a_item["id"]] = a_item
     
-    # Get detects-relationships
-    relationships = mitre.get_relationships(relationship_type='detects')
+    # Get data components for the technique via detection strategies and analytics:
+    techniques_detection_strategy_relations = mitre.get_techniques_detection_strategy_relations()
     tech_dc_lookup = {}
-    for rl in relationships:
-        if rl['target_ref'] not in tech_dc_lookup.keys():
-            tech_dc_lookup[rl['target_ref']] = []
-        tech_dc_lookup[rl['target_ref']].append(dc_lookup[rl['source_ref']]['name'])
+    for ds_rel in techniques_detection_strategy_relations:
+        detection_strategy = detection_strategies_ids[ds_rel["source_ref"]]
+
+        for analytic_ref in detection_strategy.get("x_mitre_analytic_refs", []):
+            analytic = analytics_ids[analytic_ref]
+
+            for log_source_ref in analytic.get("x_mitre_log_source_references", []):
+                data_component = dc_lookup[log_source_ref["x_mitre_data_component_ref"]]
+                tech_dc_lookup.setdefault(ds_rel["target_ref"], set()).add(data_component["name"])
+        
+    for tech, dc in tech_dc_lookup.items():
+        tech_dc_lookup[tech] = list(dc)
     
     attack_data = []
     for stix_tech in stix_attack_data:

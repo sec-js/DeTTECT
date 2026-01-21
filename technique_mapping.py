@@ -125,7 +125,7 @@ def _map_and_colorize_techniques_for_detections(my_techniques, domain, count_det
                             x['tactic'] = tactic
                         mapped_techniques.append(deepcopy(x))
                 else:
-                    print('[!] Technique ' + technique_id + ' is unknown in ATT&CK. Ignoring this technique.')
+                    print('[!] Technique ' + technique_id + ' does not exist (anymore) in ATT&CK. Ignoring this technique.')
     except Exception as e:
         print('[!] Possible error in YAML file at: %s. Error: %s' % (technique_id, str(e)))
         quit()
@@ -202,7 +202,7 @@ def _map_and_colorize_techniques_for_visibility(my_techniques, platforms, domain
                     x['tactic'] = tactic
                 mapped_techniques.append(deepcopy(x))
         else:
-            print('[!] Technique ' + technique_id + ' is unknown in ATT&CK. Ignoring this technique.')
+            print('[!] Technique ' + technique_id + ' does not exist (anymore) in ATT&CK. Ignoring this technique.')
 
     determine_and_set_show_sub_techniques(mapped_techniques, techniques, layer_settings)
 
@@ -222,6 +222,11 @@ def _map_and_colorize_techniques_for_visibility(my_techniques, platforms, domain
                 x = dict()
             
             technique = get_technique(techniques, technique_id)
+
+            if technique is None:
+                print('[!] Technique ' + technique_id + ' does not exist (anymore) in ATT&CK. Ignoring this technique.')
+                continue
+
             tactics = []
             if 'includeTactic' in layer_settings.keys() and layer_settings['includeTactic'] == 'True':
                 for kill_chain_phase in technique['kill_chain_phases']:
@@ -289,7 +294,11 @@ def _map_and_colorize_techniques_for_overlaid(my_techniques, platforms, domain, 
             color = COLOR_WHITE
 
         technique = get_technique(techniques, technique_id)
-        
+
+        if technique is None:
+            print('[!] Technique ' + technique_id + ' does not exist (anymore) in ATT&CK. Ignoring this technique.')
+            continue
+
         tactics = []
         if 'includeTactic' in layer_settings.keys() and layer_settings['includeTactic'] == 'True':
             for kill_chain_phase in technique['kill_chain_phases']:
@@ -583,7 +592,7 @@ def export_techniques_list_to_excel(filename, output_filename, output_overwrite)
                 
                 dy += 1
             else:
-                print('[!] Technique ' + technique_id + ' is unknown in ATT&CK. Ignoring this technique.')
+                print('[!] Technique ' + technique_id + ' does not exist (anymore) in ATT&CK. Ignoring this technique.')
 
     # Writing the visibility items:
     vy = y + 1
@@ -619,7 +628,7 @@ def export_techniques_list_to_excel(filename, output_filename, output_overwrite)
                 
                 vy += 1
             else:
-                print('[!] Technique ' + technique_id + ' is unknown in ATT&CK. Ignoring this technique.')
+                print('[!] Technique ' + technique_id + ' does not exist (anymore) in ATT&CK. Ignoring this technique.')
 
     try:
         workbook.close()

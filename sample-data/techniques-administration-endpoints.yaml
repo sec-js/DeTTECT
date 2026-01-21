@@ -6810,8 +6810,8 @@ techniques:
       score: 1
       comment: ''
       auto_generated: true
-- technique_id: T1574.002
-  technique_name: DLL Side-Loading
+- technique_id: T1574.001
+  technique_name: DLL
   detection:
   - applicable_to:
     - all

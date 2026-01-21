@@ -134,26 +134,6 @@ class attack_client():
         all_groups = self.remove_revoked_deprecated(groups_enterprise + groups_mobile + groups_ics)
         return all_groups
     
-    def get_enterprise_data_sources(self):
-        data_sources = self.enterprise_source.query(Filter("type", "=", "x-mitre-data-source"))
-        data_sources = self.remove_revoked_deprecated(data_sources)
-        return data_sources
-
-    def get_mobile_data_sources(self):
-        data_sources = self.mobile_source.query(Filter("type", "=", "x-mitre-data-source"))
-        data_sources = self.remove_revoked_deprecated(data_sources)
-        return data_sources
-
-    def get_ics_data_sources(self):
-        data_sources = self.ics_source.query(Filter("type", "=", "x-mitre-data-source"))
-        data_sources = self.remove_revoked_deprecated(data_sources)
-        return data_sources
-    
-    def get_data_sources(self):
-        data_sources = self.composite_source.query(Filter("type", "=", "x-mitre-data-source"))
-        data_sources = self.remove_revoked_deprecated(data_sources)
-        return data_sources
-
     def get_enterprise_data_components(self):
         data_components = self.enterprise_source.query(Filter("type", "=", "x-mitre-data-component"))
         data_components = self.remove_revoked_deprecated(data_components)
@@ -173,8 +153,62 @@ class attack_client():
         data_components = self.composite_source.query(Filter("type", "=", "x-mitre-data-component"))
         data_components = self.remove_revoked_deprecated(data_components)
         return data_components
+    
+    def get_detection_strategies(self, remove_revoked_deprecated):
+        detection_strategies = self.composite_source.query(Filter("type", "=", "x-mitre-detection-strategy"))
+        if remove_revoked_deprecated:
+            detection_strategies = self.remove_revoked_deprecated(detection_strategies)
+        return detection_strategies
+    
+    def get_enterprise_detection_strategies(self, remove_revoked_deprecated):
+        detection_strategies = self.enterprise_source.query(Filter("type", "=", "x-mitre-detection-strategy"))
+        if remove_revoked_deprecated:
+            detection_strategies = self.remove_revoked_deprecated(detection_strategies)
+        return detection_strategies
+    
+    def get_mobile_detection_strategies(self, remove_revoked_deprecated):
+        detection_strategies = self.mobile_source.query(Filter("type", "=", "x-mitre-detection-strategy"))
+        if remove_revoked_deprecated:
+            detection_strategies = self.remove_revoked_deprecated(detection_strategies)
+        return detection_strategies
+    
+    def get_ics_detection_strategies(self, remove_revoked_deprecated):
+        detection_strategies = self.ics_source.query(Filter("type", "=", "x-mitre-detection-strategy"))
+        if remove_revoked_deprecated:
+            detection_strategies = self.remove_revoked_deprecated(detection_strategies)
+        return detection_strategies
+
+    def get_analytics(self, remove_revoked_deprecated):
+        analytics = self.composite_source.query(Filter("type", "=", "x-mitre-analytic"))
+        if remove_revoked_deprecated:
+            analytics = self.remove_revoked_deprecated(analytics)
+        return analytics
+    
+    def get_enterprise_analytics(self, remove_revoked_deprecated):
+        analytics = self.enterprise_source.query(Filter("type", "=", "x-mitre-analytic"))
+        if remove_revoked_deprecated:
+            analytics = self.remove_revoked_deprecated(analytics)
+        return analytics
+
+    def get_mobile_analytics(self, remove_revoked_deprecated):
+        analytics = self.mobile_source.query(Filter("type", "=", "x-mitre-analytic"))
+        if remove_revoked_deprecated:
+            analytics = self.remove_revoked_deprecated(analytics)
+        return analytics
+
+    def get_ics_analytics(self, remove_revoked_deprecated):
+        analytics = self.ics_source.query(Filter("type", "=", "x-mitre-analytic"))
+        if remove_revoked_deprecated:
+            analytics = self.remove_revoked_deprecated(analytics)
+        return analytics
 
     def get_enterprise_tactics(self):
         enterprise_tactics = self.enterprise_source.query(Filter("type", "=", "x-mitre-tactic"))
         enterprise_tactics = self.remove_revoked_deprecated(enterprise_tactics)
         return enterprise_tactics
+    
+    def get_techniques_detection_strategy_relations(self):
+        filter_relationship_type = Filter("relationship_type", "=", "detects")
+        filter_type = Filter("type", "=", "relationship")
+        techniques_detection_strategy_relations = self.composite_source.query([filter_relationship_type, filter_type])
+        return techniques_detection_strategy_relations

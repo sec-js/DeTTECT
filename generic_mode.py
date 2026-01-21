@@ -44,6 +44,7 @@ def get_statistics_data_sources(domain, arg_platforms):
     techniques = load_attack_data(stix_type)
 
     # user want to only include data source for specific platforms
+    applicable_data_sources = None
     if arg_platforms != None:
         arg_platforms = set([attack_platforms[p.lower()] for p in arg_platforms])
 
@@ -63,16 +64,12 @@ def get_statistics_data_sources(domain, arg_platforms):
 
             dettect_data_sources = tech.get('dettect_data_sources', [])
             for ds in data_sources + dettect_data_sources:
-                ds_component = ds
-                if ':' in ds:
-                    ds_component = ds.split(':')[1][1:].lstrip().rstrip()
-
                 if arg_platforms != None:
-                    if ds_component not in applicable_data_sources:
+                    if ds not in applicable_data_sources:
                         continue
 
                 if ds not in data_sources_dict:
-                    platforms = _get_platforms_for_data_source(ds_component, domain)
+                    platforms = _get_platforms_for_data_source(ds, domain)
                     if arg_platforms != None:
                         platforms = list(set(platforms).intersection(arg_platforms))
                     data_sources_dict[ds] = {'techniques': [tech_id], 'count': 1, 'platforms': platforms}
